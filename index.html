@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SLAP LAND</title>
+
+    <meta name="description" content="سرور ماینکرفت SLAP LAND">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- پس زمینه -->
+    <div class="background">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- کانتینر -->
+    <main class="container">
+
+        <!-- لوگو -->
+        <img src="Logo.png" alt="SLAP LAND" class="logo">
+
+        <!-- عنوان -->
+        <h1>SLAP LAND</h1>
+
+        <p class="subtitle">
+            پشتیبانی از تمامی نسخه‌های Minecraft Java و Bedrock
+        </p>
+
+        <!-- کارت وضعیت -->
+        <section class="server-card">
+
+            <div class="status-row">
+
+                <span class="title">
+                    وضعیت سرور
+                </span>
+
+                <span id="status" class="status loading">
+                    درحال دریافت...
+                </span>
+
+            </div>
+
+            <div class="status-row">
+
+                <span class="title">
+                    بازیکنان آنلاین
+                </span>
+
+                <span id="players">
+                    --
+                </span>
+
+            </div>
+
+            <div class="status-row">
+
+                <span class="title">
+                    نسخه
+                </span>
+
+                <span id="version">
+                    --
+                </span>
+
+            </div>
+
+            <div class="status-row">
+
+                <span class="title">
+                    آی‌پی
+                </span>
+
+                <span id="ip">
+                    amir_kalam-srv-slap_landjava.play.mihancraft.com
+                </span>
+
+            </div>
+
+            <div class="status-row">
+
+                <span class="title">
+                    پورت
+                </span>
+
+                <span>
+                    25566
+                </span>
+
+            </div>
+
+        </section>
+
+        <!-- دکمه ها -->
+        <div class="buttons">
+
+            <button id="copyButton">
+
+                کپی آی‌پی
+
+            </button>
+
+            <button id="refreshButton">
+
+                بروزرسانی
+
+            </button>
+
+        </div>
+
+        <!-- پیام -->
+        <p id="message"></p>
+
+    </main>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
