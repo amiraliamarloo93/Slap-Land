@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+    <title>SLAP LAND | مدیریت</title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+<body>
+
+<div class="background">
+
+    <span></span>
+    <span></span>
+    <span></span>
+
+</div>
+
+<div class="panel">
+
+    <h1>
+
+        SLAP LAND
+
+    </h1>
+
+    <p class="subtitle">
+
+        پنل مدیریت سرور
+
+    </p>
+
+    <!-- ورود -->
+
+    <div id="loginPage">
+
+        <input
+        id="adminName"
+        type="text"
+        placeholder="نام مدیر">
+
+        <input
+        id="password"
+        type="password"
+        placeholder="رمز عبور">
+
+        <button id="loginButton">
+
+            ورود
+
+        </button>
+
+        <p id="loginMessage"></p>
+
+    </div>
+
+    <!-- پنل -->
+
+    <div
+    id="dashboard"
+    style="display:none;">
+
+        <div class="card">
+
+            <h2>
+
+                وضعیت کامپیوتر
+
+            </h2>
+
+            <p id="pcStatus">
+
+                درحال بررسی...
+
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h2>
+
+                وضعیت درخواست
+
+            </h2>
+
+            <p id="requestStatus">
+
+                هیچ درخواستی ثبت نشده است.
+
+            </p>
+
+        </div>
+
+        <button
+        id="requestButton">
+
+            🟢 درخواست روشن کردن سرور
+
+        </button>
+
+        <button
+        id="logoutButton">
+
+            خروج
+
+        </button>
+
+    </div>
+
+</div>
+
+<footer>
+
+    <img
+    src="Logo.png"
+    alt="Logo">
+
+    <span>
+
+        سازنده :
+        امیرکلام
+
+    </span>
+
+</footer>
+
+<script src="admin.js"></script>
+
+</body>
+
+</html>
