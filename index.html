@@ -2,98 +2,153 @@
 <html lang="fa" dir="rtl">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Server Slap_Land </title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="سرور ماینکرفت Slap_Land">
+    <title>SLAP LAND</title>
 
-    <link rel="stylesheet" href="style.css">
+    <meta name="description"
+          content="سرور ماینکرفت اسلپ لند">
+
+    <meta name="theme-color"
+          content="#0d111f">
+
+    <link rel="stylesheet"
+          href="style.css">
+
 </head>
 
 <body>
 
     <!-- پس زمینه -->
+
     <div class="background">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+
+        <div class="blur blue"></div>
+
+        <div class="blur orange"></div>
+
+        <div class="particles"></div>
+
     </div>
 
-    <!-- کانتینر -->
+    <!-- صفحه -->
+
     <main class="container">
 
-        <!-- لوگو -->
-        <img src="Logo.png" alt="SLAP LAND" class="logo">
-
         <!-- عنوان -->
-        <h1>SLAP LAND</h1>
 
-        <p class="subtitle">
-            پشتیبانی از تمامی نسخه‌های Minecraft Java و Bedrock
-        </p>
+        <header class="hero">
 
-        <!-- کارت وضعیت -->
-        <section class="server-card">
+            <h1 class="server-name">
 
-            <div class="status-row">
+                SLAP LAND
 
-                <span class="title">
+            </h1>
+
+            <p class="server-description">
+
+                سرور ماینکرفت
+
+            </p>
+
+            <p class="server-support">
+
+                پشتیبانی از تمامی نسخه‌های Java و Bedrock
+
+            </p>
+
+        </header>
+
+        <!-- کارت -->
+
+        <section
+            class="server-card"
+            id="serverCard">
+
+            <div class="card-header">
+
+                <span>
+
                     وضعیت سرور
+
                 </span>
 
-                <span id="status" class="status loading">
-                    درحال دریافت...
+                <span
+                    id="status"
+                    class="status loading">
+
+                    درحال بررسی...
+
                 </span>
 
             </div>
 
-            <div class="status-row">
+            <div class="divider"></div>
 
-                <span class="title">
-                    بازیکنان آنلاین 
+            <div class="card-item">
+
+                <span>
+
+                    👥 بازیکنان
+
                 </span>
 
                 <span id="players">
+
                     --
+
                 </span>
 
             </div>
 
-            <div class="status-row">
+            <div class="card-item">
 
-                <span class="title">
-                    نسخه 
+                <span>
+
+                    🎮 نسخه
+
                 </span>
 
                 <span id="version">
+
                     --
+
                 </span>
 
             </div>
 
-            <div class="status-row">
+            <div class="card-item">
 
-                <span class="title">
-                    آی‌پی : 
+                <span>
+
+                    📡 آدرس
+
                 </span>
 
                 <span id="ip">
+
                     amir_kalam-srv-slap_landjava.play.mihancraft.com
+
                 </span>
 
             </div>
 
-            <div class="status-row">
+            <div class="card-item">
 
-                <span class="title">
-                    پورت :
+                <span>
+
+                    🔌 پورت
+
                 </span>
 
                 <span>
+
                     25566
+
                 </span>
 
             </div>
@@ -101,7 +156,8 @@
         </section>
 
         <!-- دکمه ها -->
-        <div class="buttons">
+
+        <section class="actions">
 
             <button id="copyButton">
 
@@ -115,12 +171,37 @@
 
             </button>
 
-        </div>
+        </section>
 
-        <!-- پیام -->
         <p id="message"></p>
 
     </main>
+
+    <!-- فوتر -->
+
+    <footer>
+
+        <div class="developer">
+
+            <img
+                src="Logo.png"
+                alt="Logo"
+                class="footer-logo">
+
+            <span>
+
+                سازنده :
+                <strong>
+
+                    امیرکلام
+
+                </strong>
+
+            </span>
+
+        </div>
+
+    </footer>
 
     <script src="script.js"></script>
 
