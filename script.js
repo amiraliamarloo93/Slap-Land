@@ -6,7 +6,7 @@
 */
 
 const SERVER_HOST = "amir_kalam-srv-slap_landjava.play.mihancraft.com";
-const SERVER_PORT = "25566";
+const SERVER_PORT = "25565";
 
 const API =
 `https://api.mcstatus.io/v2/status/java/${SERVER_HOST}:${SERVER_PORT}`;
