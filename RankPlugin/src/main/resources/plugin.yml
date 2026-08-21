@@ -10,7 +10,7 @@ commands:
     permission: rankplugin.use
 permissions:
   rankplugin.use:
-    default: false
+    default: true
   rankplugin.admin:
     default: false
   rankplugin.owner:
