@@ -10,12 +10,7 @@ commands:
   rank:
     description: Change a player's managed rank
     usage: /rank <Player_Name> the <Rank_Name>
-    permission: rankplugin.rank
-    permission-message: "§cYou don't have permission to use this command."
 permissions:
   rankplugin.rank:
-    description: Allows using /rank
-    default: false
-  rankplugin.owner:
-    description: Allows owner to use /rank on protected ranks
-    default: false
+    description: Allows the /rank command to reach the internal Admin/Owner check
+    default: true

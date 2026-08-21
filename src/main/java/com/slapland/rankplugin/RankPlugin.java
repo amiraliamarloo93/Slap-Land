@@ -2,7 +2,9 @@ package com.slapland.rankplugin;
 
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.group.Group;
 import net.luckperms.api.model.user.User;
+import net.luckperms.api.node.Node;
 import net.luckperms.api.node.types.InheritanceNode;
 import net.luckperms.api.track.Track;
 import org.bukkit.Bukkit;
@@ -30,6 +32,7 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor, Tab
         if (ranksTrack == null) {
             getLogger().warning("LuckPerms track 'ranks' was not found. Create it with: lp createtrack ranks");
         }
+
         Command rank = getCommand("rank");
         if (rank == null) {
             getLogger().severe("Command 'rank' is missing from plugin.yml");
@@ -48,37 +51,47 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor, Tab
             sender.sendMessage(ChatColor.RED + "This command can only be used by a player.");
             return true;
         }
-        if (!player.hasPermission("rankplugin.rank")) {
-            player.sendMessage(ChatColor.RED + "You do not have permission to use /rank.");
-            return true;
-        }
         if (args.length != 3 || !args[1].equalsIgnoreCase("the")) {
             player.sendMessage(ChatColor.YELLOW + "Usage: /rank <Player_Name> the <Rank_Name>");
+            return true;
+        }
+
+        User actorUser = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (actorUser == null) {
+            player.sendMessage(ChatColor.RED + "Your LuckPerms user data is not loaded yet.");
+            return true;
+        }
+
+        boolean owner = hasGroup(actorUser, "owner");
+        boolean admin = hasGroup(actorUser, "admin");
+        if (!owner && !admin) {
+            player.sendMessage(ChatColor.RED + "Only Admin or Owner can use /rank.");
+            return true;
+        }
+
+        String requestedRank = args[2].toLowerCase(Locale.ROOT);
+        if (!owner && isProtectedRank(requestedRank)) {
+            player.sendMessage(ChatColor.RED + "Admin cannot assign Admin or Owner. Only Owner can do that.");
+            return true;
+        }
+
+        if (ranksTrack == null) {
+            player.sendMessage(ChatColor.RED + "LuckPerms track 'ranks' is missing. Run: lp createtrack ranks");
+            return true;
+        }
+
+        String exactRank = ranksTrack.getGroups().stream()
+                .filter(g -> g.equalsIgnoreCase(requestedRank))
+                .findFirst()
+                .orElse(null);
+        if (exactRank == null) {
+            player.sendMessage(ChatColor.RED + "Rank not found on the 'ranks' track: " + requestedRank);
             return true;
         }
 
         Player target = Bukkit.getPlayerExact(args[0]);
         if (target == null) {
             player.sendMessage(ChatColor.RED + "Player must be online.");
-            return true;
-        }
-
-        String requestedRank = args[2].toLowerCase(Locale.ROOT);
-        boolean owner = isOwner(player);
-        if (isProtectedRank(requestedRank) && !owner) {
-            player.sendMessage(ChatColor.RED + "Admin cannot assign Admin or Owner. Only Owner can do that.");
-            return true;
-        }
-
-        if (ranksTrack == null) {
-            player.sendMessage(ChatColor.RED + "LuckPerms track 'ranks' is missing.");
-            return true;
-        }
-        String exactRank = ranksTrack.getGroups().stream()
-                .filter(g -> g.equalsIgnoreCase(requestedRank))
-                .findFirst().orElse(null);
-        if (exactRank == null) {
-            player.sendMessage(ChatColor.RED + "Rank not found on the 'ranks' track: " + requestedRank);
             return true;
         }
 
@@ -89,26 +102,41 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor, Tab
         }
 
         String currentRank = getHighestManagedRank(targetUser);
-        if (isProtectedRank(currentRank) && !owner) {
+        if (!owner && isProtectedRank(currentRank)) {
             player.sendMessage(ChatColor.RED + "Admin cannot change an Admin or Owner. Only Owner can do that.");
             return true;
         }
 
-        targetUser.data().clear(node -> node instanceof InheritanceNode);
-        targetUser.data().add(InheritanceNode.builder(exactRank).build());
-        luckPerms.getUserManager().saveUser(targetUser);
+        targetUser.data().clear(node -> isManagedRankNode(node));
+        Group group = luckPerms.getGroupManager().getGroup(exactRank);
+        if (group == null) {
+            player.sendMessage(ChatColor.RED + "LuckPerms group does not exist: " + exactRank);
+            return true;
+        }
+        targetUser.data().add(InheritanceNode.builder(group).build());
+        targetUser.setPrimaryGroup(exactRank);
 
-        player.sendMessage(ChatColor.GREEN + "Rank of " + target.getName() + " changed to " + exactRank + ".");
-        target.sendMessage(ChatColor.GREEN + "Your rank has been changed to " + exactRank + ".");
+        luckPerms.getUserManager().saveUser(targetUser).thenRun(() -> Bukkit.getScheduler().runTask(this, () -> {
+            player.sendMessage(ChatColor.GREEN + "Rank of " + target.getName() + " changed to " + exactRank + ".");
+            target.sendMessage(ChatColor.GREEN + "Your rank has been changed to " + exactRank + ".");
+        }));
         return true;
     }
 
-    private boolean isOwner(Player player) {
-        return player.hasPermission("rankplugin.owner") || player.hasPermission("*");
+    private boolean hasGroup(User user, String name) {
+        if (user.getPrimaryGroup().equalsIgnoreCase(name)) return true;
+        return user.getInheritedGroups(user.getQueryOptions()).stream()
+                .anyMatch(g -> g.getName().equalsIgnoreCase(name));
     }
 
     private boolean isProtectedRank(String rank) {
-        return rank.equalsIgnoreCase("admin") || rank.equalsIgnoreCase("owner");
+        return rank != null && (rank.equalsIgnoreCase("admin") || rank.equalsIgnoreCase("owner"));
+    }
+
+    private boolean isManagedRankNode(Node node) {
+        if (!(node instanceof InheritanceNode inheritance) || ranksTrack == null) return false;
+        String group = inheritance.getGroupName();
+        return ranksTrack.getGroups().stream().anyMatch(g -> g.equalsIgnoreCase(group));
     }
 
     private String getHighestManagedRank(User user) {
@@ -136,12 +164,18 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor, Tab
         }
         if (args.length == 2) return Collections.singletonList("the");
         if (args.length == 3 && ranksTrack != null) {
+            boolean owner = sender instanceof Player p && isOwner(p);
             String prefix = args[2].toLowerCase(Locale.ROOT);
             return ranksTrack.getGroups().stream()
-                    .filter(g -> !isProtectedRank(g) || isOwner((Player) sender))
+                    .filter(g -> !isProtectedRank(g) || owner)
                     .filter(g -> g.toLowerCase(Locale.ROOT).startsWith(prefix))
                     .toList();
         }
         return Collections.emptyList();
+    }
+
+    private boolean isOwner(Player player) {
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        return user != null && hasGroup(user, "owner");
     }
 }
