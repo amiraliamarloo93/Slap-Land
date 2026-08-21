@@ -28,9 +28,10 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor {
             return;
         }
 
-        if (getCommand("rank") != null) {
-            getCommand("rank").setExecutor(this);
-        }
+        // Do not call JavaPlugin#getCommand here. Its return type changed in newer
+        // Paper APIs, which can cause a NoSuchMethodError when the plugin is run on 1.20.4.
+        // Because this plugin implements CommandExecutor, Bukkit uses the plugin itself
+        // as the command executor for /rank declared in plugin.yml.
         getLogger().info("RankPlugin 1.0.2 enabled for Paper 1.20.4. /rank <player> the <rank>");
     }
 
