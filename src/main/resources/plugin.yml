@@ -1,16 +1,21 @@
 name: RankPlugin
-version: 1.0.1
-main: ir.slapland.rankplugin.RankPlugin
+version: 1.0.2
+main: com.slapland.rankplugin.RankPlugin
 api-version: '1.20'
 author: Slap Land
-softdepend: [LuckPerms]
+description: Safe /rank command for LuckPerms ranks track
+softdepend:
+  - LuckPerms
 commands:
   rank:
-    description: Change a player's rank through LuckPerms
+    description: Change a player's managed rank
     usage: /rank <Player_Name> the <Rank_Name>
     permission: rankplugin.rank
     permission-message: "§cYou don't have permission to use this command."
 permissions:
   rankplugin.rank:
     description: Allows using /rank
+    default: false
+  rankplugin.owner:
+    description: Allows owner to use /rank on protected ranks
     default: false
