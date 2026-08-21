@@ -3,8 +3,8 @@ name: Build RankPlugin
 on:
   push:
     paths:
-      - 'pom.xml'
-      - 'src/**'
+      - 'RankPlugin/pom.xml'
+      - 'RankPlugin/src/**'
       - '.github/workflows/build-rankplugin.yml'
   workflow_dispatch:
 
@@ -20,10 +20,11 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Build
-        run: mvn -B -DskipTests package
+      - name: Build RankPlugin
+        working-directory: RankPlugin
+        run: mvn -B -DskipTests clean package
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         with:
           name: RankPlugin-1.0.2
-          path: target/RankPlugin-1.0.2.jar
+          path: RankPlugin/target/RankPlugin-1.0.2.jar
