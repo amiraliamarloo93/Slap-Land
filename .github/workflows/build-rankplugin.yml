@@ -1,0 +1,29 @@
+name: Build RankPlugin
+
+on:
+  push:
+    paths:
+      - 'pom.xml'
+      - 'src/**'
+      - '.github/workflows/build-rankplugin.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      - name: Build
+        run: mvn -B -DskipTests package
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: RankPlugin-1.0.2
+          path: target/RankPlugin-1.0.2.jar
