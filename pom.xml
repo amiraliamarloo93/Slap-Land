@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>ir.slapland</groupId>
   <artifactId>RankPlugin</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>RankPlugin</name>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
@@ -27,7 +27,7 @@
     </dependency>
   </dependencies>
   <build>
-    <finalName>RankPlugin-1.0.1</finalName>
+    <finalName>RankPlugin-1.0.2</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
