@@ -1,5 +1,8 @@
 package com.slapland.rankplugin;
 
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.model.user.User;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,30 +16,47 @@ import java.util.Set;
 
 public final class RankPlugin extends JavaPlugin implements CommandExecutor {
     private static final Set<String> RANKS = Set.of("member", "vip", "admin", "owner");
+    private LuckPerms luckPerms;
 
     @Override
     public void onEnable() {
-        if (getCommand("rank") != null) getCommand("rank").setExecutor(this);
-        getLogger().info("RankPlugin enabled. /rank <player> the <rank>");
+        try {
+            luckPerms = LuckPermsProvider.get();
+        } catch (IllegalStateException ex) {
+            getLogger().severe("LuckPerms was not found. RankPlugin will be disabled.");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        if (getCommand("rank") != null) {
+            getCommand("rank").setExecutor(this);
+        }
+        getLogger().info("RankPlugin 1.0.2 enabled for Paper 1.20.4. /rank <player> the <rank>");
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!command.getName().equalsIgnoreCase("rank")) return false;
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof Player actor)) {
             sender.sendMessage(ChatColor.RED + "This command must be used in-game.");
             return true;
         }
-        Player actor = (Player) sender;
-        if (!actor.hasPermission("rankplugin.use")) {
-            actor.sendMessage(ChatColor.RED + "You do not have permission to use /rank.");
+
+        String actorRank = getPrimaryGroup(actor);
+        boolean owner = actorRank.equals("owner") || actor.hasPermission("*") || actor.isOp();
+        boolean admin = owner || actorRank.equals("admin");
+
+        if (!admin) {
+            actor.sendMessage(ChatColor.RED + "Only Admin or Owner can use /rank.");
             return true;
         }
+
         if (args.length != 3 || !args[1].equalsIgnoreCase("the")) {
             actor.sendMessage(ChatColor.YELLOW + "Usage: /rank <Player_Name> the <Rank_Name>");
             actor.sendMessage(ChatColor.GRAY + "Ranks: member, vip, admin, owner");
             return true;
         }
+
         String rank = args[2].toLowerCase(Locale.ROOT);
         if (!RANKS.contains(rank)) {
             actor.sendMessage(ChatColor.RED + "Unknown rank. Use: member, vip, admin, owner");
@@ -49,35 +69,31 @@ public final class RankPlugin extends JavaPlugin implements CommandExecutor {
             return true;
         }
 
-        boolean owner = actor.hasPermission("rankplugin.owner") || actor.hasPermission("*");
-        boolean admin = owner || actor.hasPermission("rankplugin.admin");
-        if (!admin) {
-            actor.sendMessage(ChatColor.RED + "Only Admin or Owner can use /rank.");
+        String targetRank = getPrimaryGroup(target);
+        if (!owner && (rank.equals("admin") || rank.equals("owner")
+                || targetRank.equals("admin") || targetRank.equals("owner"))) {
+            actor.sendMessage(ChatColor.RED + "Admin cannot change Admin/Owner ranks.");
             return true;
         }
 
-        if (!owner) {
-            String current = getPrimaryGroup(target);
-            if (rank.equals("admin") || rank.equals("owner") || current.equals("admin") || current.equals("owner")) {
-                actor.sendMessage(ChatColor.RED + "Admin cannot change Admin/Owner ranks.");
-                return true;
-            }
-        }
+        boolean dispatched = Bukkit.dispatchCommand(
+                Bukkit.getConsoleSender(),
+                "lp user " + target.getName() + " parent set " + rank
+        );
 
-        boolean dispatched = Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                "lp user " + target.getName() + " parent set " + rank);
         if (!dispatched) {
-            actor.sendMessage(ChatColor.RED + "Could not execute LuckPerms command.");
+            actor.sendMessage(ChatColor.RED + "Could not execute the LuckPerms command.");
             return true;
         }
+
         actor.sendMessage(ChatColor.GREEN + "Rank of " + target.getName() + " changed to " + rank + ".");
         target.sendMessage(ChatColor.GREEN + "Your rank is now " + rank + ".");
         return true;
     }
 
     private String getPrimaryGroup(Player player) {
-        if (player.hasPermission("rankplugin.owner") || player.hasPermission("*")) return "owner";
-        if (player.hasPermission("rankplugin.admin")) return "admin";
-        return "member";
+        User user = luckPerms.getUserManager().getUser(player.getUniqueId());
+        if (user == null) return "default";
+        return user.getPrimaryGroup().toLowerCase(Locale.ROOT);
     }
 }
